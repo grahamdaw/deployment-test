@@ -21,27 +21,27 @@ jobs:
           at: ~/repo
       - restore_cache:
           keys:
-            - dependency-cache-{{ checksum "package.json" }}
+            - dependency-cache-{{ checksum "functions/package.json" }}
             - dependency-cache-
       - run:
           name: Setup Dependencies
           command: npm install
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "functions/package.json" }}
           paths:
             - ./node_modules
       - run:
           name: Build
           command: npm run build
-      - run:
-          name: Firebase cli install
-          command: npm install --save-dev firebase-tools
-      - run:
-          name: Firebase functions deploy
-          command: ./node_modules/.bin/firebase deploy --only functions --token "$FIREBASE_TOKEN"
-      - run:
-          name: Firebase hosting deploy
-          command: ./node_modules/.bin/firebase deploy --only hosting --token "$FIREBASE_TOKEN"
+      #- run:
+      #    name: Firebase cli install
+      #    command: npm install --save-dev firebase-tools
+      #- run:
+      #    name: Firebase functions deploy
+      #    command: ./node_modules/.bin/firebase deploy --only functions --token "$FIREBASE_TOKEN"
+      #- run:
+      #    name: Firebase hosting deploy
+      #    command: ./node_modules/.bin/firebase deploy --only hosting --token "$FIREBASE_TOKEN"
 
   react-app-admin:
     docker:
