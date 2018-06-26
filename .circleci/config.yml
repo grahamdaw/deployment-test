@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys
+          keys:
             - dependency-cache-{{ checksum "package.json" }}
             - dependency-cache-
       - run:
@@ -38,7 +38,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys
+          keys:
             - dependency-cache-{{ checksum "package.json" }}
             - dependency-cache-
       - run:
@@ -59,7 +59,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys
+          keys:
             - dependency-cache-{{ checksum "package.json" }}
             - dependency-cache-
       - run:
