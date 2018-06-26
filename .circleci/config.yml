@@ -1,38 +1,90 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
+
 jobs:
-  build:
+  firebase:
     docker:
-      # specify the version you desire here
-      - image: circleci/node:7.10
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    working_directory: ~/repo
-
+      - image: circleci/node:8.11.2-browsers
+    working_directory: ~/repo/firebase
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: yarn install
-
+          keys
+            - dependency-cache-{{ checksum "package.json" }}
+            - dependency-cache-
+      - run:
+          name: Setup Dependencies
+          command: npm install
       - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-        
-      # run tests!
-      - run: yarn test
+            - ./node_modules
+      - run:
+          name: Build
+          command: npm run build
+      - run:
+          name: Firebase cli install
+          command: npm install --save-dev firebase-tools
+      - run:
+          name: Firebase functions deploy
+          command: ./node_modules/.bin/firebase deploy --only functions --token "$FIREBASE_TOKEN"
+      - run:
+          name: Firebase hosting deploy
+          command: ./node_modules/.bin/firebase deploy --only hosting --token "$FIREBASE_TOKEN"
 
+  react-app-admin:
+    docker:
+      - image: circleci/node:8.11.2-browsers
+    working_directory: ~/repo/admin
+    steps:
+      - checkout
+      - restore_cache:
+          keys
+            - dependency-cache-{{ checksum "package.json" }}
+            - dependency-cache-
+      - run:
+          name: Setup Dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Build
+          command: npm run build
+
+  react-app-web:
+    docker:
+      - image: circleci/node:8.11.2-browsers
+    working_directory: ~/repo/web
+    steps:
+      - checkout
+      - restore_cache:
+          keys
+            - dependency-cache-{{ checksum "package.json" }}
+            - dependency-cache-
+      - run:
+          name: Setup Dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Build
+          command: npm run build
+
+workflows:
+  version: 2
+  deploy-workflow:
+    jobs:
+      - react-app-admin
+      - react-app-web
+      - firebase:
+          requires:
+            - react-app-admin
+            - react-app-web
+          filters:
+            branches:
+              only:
+                - master
+                - dev
