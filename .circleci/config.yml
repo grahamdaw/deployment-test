@@ -4,21 +4,21 @@ jobs:
   fetch-code:
     docker:
       - image: circleci/node:8.11.2-browsers
-    working_directory: ~/
+    working_directory: ~/repo
     steps:
       - checkout
       - persist_to_workspace:
-          root: ~/
+          root: ~/repo
           paths:
-            -
+            - 
 
   firebase:
     docker:
       - image: circleci/node:8.11.2-browsers
-    working_directory: ~/firebase
+    working_directory: ~/repo/firebase
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/repo
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "package.json" }}
@@ -46,10 +46,10 @@ jobs:
   react-app-admin:
     docker:
       - image: circleci/node:8.11.2-browsers
-    working_directory: ~/admin
+    working_directory: ~/repo/admin
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/repo
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "package.json" }}
@@ -68,10 +68,10 @@ jobs:
   react-app-web:
     docker:
       - image: circleci/node:8.11.2-browsers
-    working_directory: ~/web
+    working_directory: ~/repo/web
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/repo
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "package.json" }}
